@@ -49,7 +49,7 @@ A red **W** appears in the menu bar and floating at the bottom of the screen.
    - Under **API Keys**, they click **Create Key**, copy it, and paste it straight into Wisp's box. Not into this chat.
 
    Usage bills to their own account: a small fraction of a cent per dictation, a few cents per call for notes.
-   No key yet? They can click **Skip**. Dictation still works without cleanup, and they can add a key later
+   No key yet? They can click **Skip for Now**. Dictation still works without cleanup, and they can add a key later
    under W menu → Change Anthropic API Key.
 2. **Speech model:** Wisp downloads its speech model (about 575 MB). The floating W shows "Setting up NN%".
    Wait until it finishes.

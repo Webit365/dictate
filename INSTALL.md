@@ -25,7 +25,7 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 ## 3. Finish setup (one time)
 
 - **API key:** a Welcome box asks for your key. Paste it (it starts with `sk-ant-`) and click **Save**.
-  No key yet? Click **Skip**: dictation still works without cleanup, and you can add a key later from the W menu.
+  No key yet? Click **Skip for Now**: dictation still works without cleanup, and you can add a key later from the W menu.
 - **Speech model download:** Wisp downloads its speech model (about 575 MB). The floating W shows
   **Setting up 40%** while this happens. It takes a few minutes, and you only do it once.
 - **Microphone:** click **Allow** when asked.
