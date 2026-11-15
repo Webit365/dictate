@@ -9,7 +9,7 @@ and an Anthropic API key (ask Stephen for yours).
 ## 1. Install
 
 1. In Dropbox, open **webit365 → apps → dictation → release**.
-2. Double-click **Dictate-1.0.zip**. A **Dictate** app appears next to it.
+2. Double-click the **Dictate zip** (for example Dictate-1.1.zip). A **Dictate** app appears next to it.
 3. Drag **Dictate** into your **Applications** folder.
 
 ## 2. Open it the first time
@@ -42,8 +42,10 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 - Names it gets wrong (clients, places): **W menu → Edit Vocabulary…**, one per line.
 
 **Call notes:** click **Notes** on the floating W when a Zoom / Teams / Meet / Slack call starts, and **Stop** when it ends.
-A notes file opens a minute later with a summary, decisions, action items, and the full transcript
-(saved in **Documents → Call Notes**; change it under **W menu → Call Notes Settings**).
+About a minute later a **Call Notes window** pops up with the summary, decisions, action items, and the full
+transcript. Use its buttons to **Copy Notes**, **Open in Browser**, or **Show in Finder**. The notes are also saved
+automatically in **Documents → Call Notes** (change the folder under **W menu → Call Notes Settings**).
+To see them again later: **W menu → Show Last Call Notes**.
 The first time, allow **Screen & System Audio Recording**; that's how it hears the other side. Nothing on screen is recorded.
 **Always tell people you're recording.** Headphones give the cleanest transcripts.
 

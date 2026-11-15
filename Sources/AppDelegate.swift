@@ -23,6 +23,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var headPanel: FloatingPanel?
     private var callTimer: Timer?
     private var installer: ModelInstaller?
+    private var lastNotesURL: URL? {
+        get { UserDefaults.standard.string(forKey: "lastNotes").map { URL(fileURLWithPath: $0) } }
+        set { UserDefaults.standard.set(newValue?.path, forKey: "lastNotes") }
+    }
     private var setupStatus: String? { didSet { syncHead() } }
     private var setupFailed = false
     private var modelsReady: Bool { ModelInstaller.missing.isEmpty }
@@ -328,6 +332,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         } else {
             menu.addItem(item("Start Call Notes", #selector(startCall)))
         }
+        if let last = lastNotesURL, FileManager.default.fileExists(atPath: last.path), !callRecorder.isRecording {
+            menu.addItem(item("Show Last Call Notes", #selector(showLastNotes)))
+        }
         menu.addItem(.separator())
 
         let copy = item("Copy Last Dictation", #selector(copyLast))
@@ -452,7 +459,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                     switch result {
                     case .success(let url):
                         NSSound(named: "Glass")?.play()
-                        NSWorkspace.shared.open(url)
+                        self.lastNotesURL = url
+                        NotesWindowController.show(url)
                         self.statusNote = nil
                     case .failure(let e):
                         self.statusNote = "Call notes: " + e.localizedDescription
@@ -470,6 +478,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self?.statusNote = "Recording discarded."
             self?.updateIcon()
         }
+    }
+
+    @objc private func showLastNotes() {
+        if let url = lastNotesURL { NotesWindowController.show(url) }
     }
 
     @objc private func pickSummary(_ sender: NSMenuItem) {
