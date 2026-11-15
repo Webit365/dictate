@@ -1,6 +1,6 @@
-# How to install Dictate
+# How to install Wisp
 
-Dictate is Webit365's own dictation app, similar to Wispr Flow. Hold a key, talk, and let go: your words are
+Wisp is Webit365's own dictation app, similar to Wispr Flow. Hold a key, talk, and let go: your words are
 typed, cleaned up, wherever your cursor is. It also records calls and writes notes with action items.
 
 **You need:** an Apple Silicon Mac (M1, M2, M3, M4) on macOS 14 or newer, about 1 GB of free space,
@@ -9,32 +9,32 @@ and an Anthropic API key (ask Stephen for yours).
 ## 1. Install
 
 1. In Dropbox, open **webit365 → apps → dictation → release**.
-2. Double-click the **Dictate zip** (for example Dictate-1.1.zip). A **Dictate** app appears next to it.
-3. Drag **Dictate** into your **Applications** folder.
+2. Double-click the **Wisp zip** (for example Wisp-1.2.zip). A **Wisp** app appears next to it.
+3. Drag **Wisp** into your **Applications** folder.
 
 ## 2. Open it the first time
 
-Dictate isn't from the App Store, so macOS asks you to confirm it once:
+Wisp isn't from the App Store, so macOS asks you to confirm it once:
 
-1. In Applications, **right-click Dictate → Open**, then click **Open** again.
+1. In Applications, **right-click Wisp → Open**, then click **Open** again.
 2. If macOS only offers "Move to Trash" or "Done": open **System Settings → Privacy & Security**,
-   scroll down, and click **Open Anyway** next to the Dictate message.
+   scroll down, and click **Open Anyway** next to the Wisp message.
 
 A Webit365 **W** appears in your menu bar and floating at the bottom of your screen.
 
 ## 3. Finish setup (one time)
 
 - **API key:** a Welcome box asks for your key. Paste it (it starts with `sk-ant-`) and click **Save**.
-- **Speech model download:** Dictate downloads its speech model (about 575 MB). The floating W shows
+- **Speech model download:** Wisp downloads its speech model (about 575 MB). The floating W shows
   **Setting up 40%** while this happens. It takes a few minutes, and you only do it once.
 - **Microphone:** click **Allow** when asked.
 - **Accessibility** (needed to type for you): open **System Settings → Privacy & Security → Accessibility**,
-  click **+**, choose **Dictate** from Applications, and turn it **on**.
-  If dictation ever stops typing, Dictate shows a message and leaves your text on the clipboard; press ⌘V.
+  click **+**, choose **Wisp** from Applications, and turn it **on**.
+  If dictation ever stops typing, Wisp shows a message and leaves your text on the clipboard; press ⌘V.
 
 ## 4. Use it
 
-**Dictate:** click into any text box, **hold Right Option ⌥**, talk, and let go. The W bounces while you talk.
+**Dictation:** click into any text box, **hold Right Option ⌥**, talk, and let go. The W bounces while you talk.
 "Um"s and "uh"s are removed, and corrections like "Tuesday, no wait, Wednesday" become just "Wednesday".
 
 - Prefer the **fn / 🌐 key**? Choose it in the menu-bar **W → Dictation Key**, then in
@@ -58,8 +58,9 @@ The first time, allow **Screen & System Audio Recording**; that's how it hears t
 
 ## Updating
 
-When a new version shows up in the release folder: quit Dictate (**W menu → Quit**), unzip the new version,
+When a new version shows up in the release folder: quit Wisp (**W menu → Quit**), unzip the new version,
 and drag it into Applications, replacing the old one. Your settings and permissions carry over.
+Coming from the older **Dictate** app? Quit it, drag **Dictate** from Applications to the Trash, then install Wisp.
 
 ## Help
 

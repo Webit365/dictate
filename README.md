@@ -1,4 +1,4 @@
-# Dictate
+# Wisp
 
 A personal, Wispr-style dictation app for the Mac menu bar.
 
@@ -21,7 +21,7 @@ Claude (or a local model) cleans it up, and the result is pasted wherever your c
 ## Call notes
 
 Click 🎤 → **Start Call Notes** when a Zoom / Teams / Meet / Slack huddle starts, and
-**Stop & Write Call Notes** when it ends. Dictate records two tracks, your mic ("Me") and
+**Stop & Write Call Notes** when it ends. Wisp records two tracks, your mic ("Me") and
 everything the Mac plays ("Them"), so the transcript knows who said what.
 After the call:
 
@@ -33,7 +33,7 @@ After the call:
 
 The first time, macOS asks for **Screen & System Audio Recording** permission (that's how it hears the other side;
 nothing on screen is recorded). Audio is kept in `~/Library/Application Support/Dictate/calls/`.
-Headphones give the cleanest transcript; on speakers, Dictate filters out the echo.
+Headphones give the cleanest transcript; on speakers, Wisp filters out the echo.
 Always tell people you're recording.
 
 ## Menu bar
@@ -49,21 +49,21 @@ Always tell people you're recording.
 | What | Where |
 |---|---|
 | Source code (this folder) | `webit365/apps/dictation` (Dropbox) |
-| Installed app | `~/Applications/Dictate.app` |
+| Installed app | `~/Applications/Wisp.app` |
 | Speech model, Whisper framework | `~/Library/Application Support/Dictate/` (local, not synced) |
 | Vocabulary, history | `~/Library/Application Support/Dictate/` |
-| Build output | `~/Library/Caches/Dictate-build/` |
+| Build output | `~/Library/Caches/Wisp-build/` |
 
 ## Share with the team / install on another Mac
 
 ```bash
-./package.sh   # builds, signs, and writes release/Dictate-<version>.zip + "How to install Dictate.md"
+./package.sh   # builds, signs, and writes release/Wisp-<version>.zip + "How to install Wisp.md"
 ```
 
 `release/` is in the Webit365 Dropbox, so teammates install from there (see INSTALL.md). On a new Mac
 the app downloads its speech models on first launch and asks for an Anthropic API key, so no Terminal is needed.
 Bump `CFBundleShortVersionString` / `CFBundleVersion` in `Resources/Info.plist` before packaging an update.
-Always package on the Mac that holds the "Dictate Local Signing" certificate, so updates keep everyone's permissions.
+Always package on the Mac that holds the "Wisp Local Signing" certificate, so updates keep everyone's permissions.
 
 ## Rebuild
 
@@ -72,13 +72,13 @@ Always package on the Mac that holds the "Dictate Local Signing" certificate, so
 ./build.sh   # compiles, installs to ~/Applications, and relaunches
 ```
 
-Builds are signed with a private certificate, **Dictate Local Signing**, kept in the login keychain,
+Builds are signed with a private certificate, **Wisp Local Signing**, kept in the login keychain,
 so permissions survive rebuilds. Without that certificate (e.g. on a new Mac), build.sh falls back to
 ad-hoc signing, and macOS will ask you to re-approve Accessibility after each rebuild.
 
 Test the pipelines without the microphone:
 
 ```bash
-~/Applications/Dictate.app/Contents/MacOS/Dictate --test some-audio-file.aiff
-~/Applications/Dictate.app/Contents/MacOS/Dictate --test-call folder-with-me.caf-and-them.caf
+~/Applications/Wisp.app/Contents/MacOS/Wisp --test some-audio-file.aiff
+~/Applications/Wisp.app/Contents/MacOS/Wisp --test-call folder-with-me.caf-and-them.caf
 ```

@@ -47,7 +47,7 @@ final class CallRecorder: NSObject, SCStreamOutput, SCStreamDelegate {
             guard let display = content?.displays.first else {
                 DispatchQueue.main.async {
                     self.cleanupAfterFailure()
-                    completion(DictateError("Dictate needs Screen & System Audio Recording permission to hear the other side of the call. "
+                    completion(DictateError("Wisp needs Screen & System Audio Recording permission to hear the other side of the call. "
                                             + "Turn it on in System Settings → Privacy & Security, then try again."
                                             + (error.map { " (\($0.localizedDescription))" } ?? "")))
                 }

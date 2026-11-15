@@ -161,7 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(finalText, forType: .string)
                         NSSound(named: "Funk")?.play()
-                        self.statusNote = "Accessibility permission is off, so Dictate can't paste. Your text is on the clipboard: press ⌘V. Fix: System Settings → Privacy & Security → Accessibility."
+                        self.statusNote = "Accessibility permission is off, so Wisp can't paste. Your text is on the clipboard: press ⌘V. Fix: System Settings → Privacy & Security → Accessibility."
                         self.showAccessibilityAlert()
                     }
                     self.state = .idle
@@ -175,8 +175,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard !alertShown else { return }
         alertShown = true
         let a = NSAlert()
-        a.messageText = "Dictate needs Accessibility permission to paste"
-        a.informativeText = "Your text is on the clipboard, so you can press ⌘V now.\n\nTo fix it for good: in Privacy & Security → Accessibility, select Dictate and remove it with the – button, then add it back with + (it's in your home folder's Applications folder) and turn it on."
+        a.messageText = "Wisp needs Accessibility permission to paste"
+        a.informativeText = "Your text is on the clipboard, so you can press ⌘V now.\n\nTo fix it for good: in Privacy & Security → Accessibility, select Wisp and remove it with the – button, then add it back with + (it's in your home folder's Applications folder) and turn it on."
         a.addButton(withTitle: "Open Accessibility Settings")
         a.addButton(withTitle: "Later")
         NSApp.activate(ignoringOtherApps: true)
@@ -197,7 +197,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             case .working: return ("waveform", .systemBlue)
             }
         }()
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Dictate")
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Wisp")
         image?.isTemplate = true
         button.image = image
         button.contentTintColor = tint
@@ -233,9 +233,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func promptForAPIKey(firstRun: Bool) {
         let alert = NSAlert()
-        alert.messageText = firstRun ? "Welcome to Dictate" : "Anthropic API Key"
+        alert.messageText = firstRun ? "Welcome to Wisp" : "Anthropic API Key"
         alert.informativeText = (firstRun
-            ? "Dictate uses Claude to clean up your dictation and write call notes. Paste the Anthropic API key you were given (it starts with sk-ant-). It's stored in your Mac's Keychain.\n\nYou can skip this and use Dictate without cleanup, then add a key later from the menu."
+            ? "Wisp uses Claude to clean up your dictation and write call notes. Paste the Anthropic API key you were given (it starts with sk-ant-). It's stored in your Mac's Keychain.\n\nYou can skip this and use Wisp without cleanup, then add a key later from the menu."
             : "Paste an Anthropic API key (it starts with sk-ant-). It's stored in your Mac's Keychain.")
         let field = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 24))
         field.placeholderString = "sk-ant-…"
@@ -412,7 +412,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit Dictate", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Quit Wisp", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 
     private func item(_ title: String, _ action: Selector) -> NSMenuItem {

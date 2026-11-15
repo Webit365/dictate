@@ -3,24 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Dictate</string>
+	<string>Wisp</string>
 	<key>CFBundleExecutable</key>
-	<string>Dictate</string>
+	<string>Wisp</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.webit365.dictate</string>
 	<key>CFBundleName</key>
-	<string>Dictate</string>
+	<string>Wisp</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1</string>
+	<string>1.2</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Dictate listens only while you hold the dictation key, and turns what you say into text.</string>
+	<string>Wisp listens only while you hold the dictation key, and turns what you say into text.</string>
 </dict>
 </plist>

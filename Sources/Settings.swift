@@ -123,7 +123,7 @@ final class Settings {
     static var historyURL: URL { supportDir.appendingPathComponent("history.jsonl") }
 
     static let defaultVocabulary = """
-    # Names and words Dictate should always spell correctly.
+    # Names and words Wisp should always spell correctly.
     # One per line. Lines starting with # are ignored.
     Covenant Church
     ClickNNY
