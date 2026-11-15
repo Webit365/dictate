@@ -11,6 +11,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 say() { printf '\033[1;31mW\033[0m %s\n' "$*"; }
 
 # 1. Checks
+if [ "$(uname -s)" = "Darwin" ]; then
+  say "This is the Linux installer. On a Mac, Wisp is a regular app: download"
+  say "https://github.com/Webit365/dictate/releases/latest/download/Wisp.zip, unzip it, and drag Wisp into Applications."
+  exit 1
+fi
 [ "$(uname -m)" = "x86_64" ] || { say "Wisp for Linux needs a 64-bit PC (x86_64)."; exit 1; }
 command -v parec >/dev/null || { say "Missing parec. Run: sudo apt install pulseaudio-utils"; exit 1; }
 python3 -c "import gi; gi.require_version('Gtk','3.0'); gi.require_version('XApp','1.0'); gi.require_version('WebKit2','4.1')" 2>/dev/null \
