@@ -229,7 +229,7 @@ enum CallNotes {
         f.dateFormat = "EEEE, MMMM d, yyyy 'at' h:mm a"
         let mins = max(1, Int((duration / 60).rounded()))
         var h = "**When:** \(f.string(from: started)) · **Length:** \(mins) min"
-        if let app, !app.isEmpty { h += " · **App:** \(app)" }
+        if let app, !app.isEmpty { h += " · **Platform:** \(app)" }
         return h
     }
 

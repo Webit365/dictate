@@ -432,7 +432,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func startCall() {
         guard !callRecorder.isRecording, callStatus == nil else { return }
         guard modelsReady else { statusNote = "Wait for first-time setup to finish before recording calls."; return }
-        callApp = NSWorkspace.shared.frontmostApplication?.localizedName
+        callApp = CallApp.detect()
         callRecorder.start { [weak self] error in
             guard let self else { return }
             if let error {
@@ -447,6 +447,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func stopCall() {
         guard callRecorder.isRecording else { return }
+        if callApp == nil { callApp = CallApp.detect() }
         callStatus = "Finishing recording…"
         statusNote = nil
         updateIcon()
