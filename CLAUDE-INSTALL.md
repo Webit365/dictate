@@ -17,39 +17,30 @@ uname -m && sw_vers -productVersion
 
 Needs `arm64` (Apple Silicon) and macOS 14 or newer. If not, stop: Wisp won't run on this Mac.
 
-## 2. Check GitHub access
+## 2. Download and install the latest version
 
-The app is in the private repo `Webit365/dictate`.
-
-```bash
-gh auth status
-```
-
-- If `gh` isn't installed or isn't signed in, have the person run `gh auth login` (GitHub.com, HTTPS, log in
-  with a browser). If there's no Homebrew, you can download `gh` from https://cli.github.com instead.
-- If downloading fails with "not found" or "could not resolve", the person's GitHub account hasn't been given access
-  yet. Tell them to ask Stephen to add their GitHub username to Webit365/dictate, or to install from the
-  Dropbox folder **webit365 → apps → dictation → release** instead.
-
-## 3. Download and install the latest version
+No GitHub account is needed; the download is public.
 
 ```bash
 TMP=$(mktemp -d)
-gh release download --repo Webit365/dictate --pattern 'Wisp-*.zip' --dir "$TMP"
+curl -fL --progress-bar -o "$TMP/Wisp.zip" https://github.com/Webit365/dictate/releases/latest/download/Wisp.zip
 pkill -x Wisp 2>/dev/null; pkill -x Dictate 2>/dev/null
 rm -rf /Applications/Dictate.app ~/Applications/Dictate.app      # the app's old name
-ditto -x -k "$TMP"/Wisp-*.zip "$TMP/app"
+ditto -x -k "$TMP/Wisp.zip" "$TMP/app"
 rm -rf /Applications/Wisp.app
 ditto "$TMP/app/Wisp.app" /Applications/Wisp.app
 open /Applications/Wisp.app
 ```
+
+If the download fails, the person can install from the Dropbox folder **webit365 → apps → dictation → release**
+instead (unzip, drag Wisp into Applications).
 
 If macOS says it can't verify the app, have the person go to **System Settings → Privacy & Security**,
 scroll down, and click **Open Anyway** next to the Wisp message.
 
 A red **W** appears in the menu bar and floating at the bottom of the screen.
 
-## 4. Walk the person through setup
+## 3. Walk the person through setup
 
 1. **API key:** a "Welcome to Wisp" box asks for an Anthropic API key. They paste the key Stephen gave
    them (starts with `sk-ant-`) and click **Save**. If they don't have one, they can click Skip and ask Stephen.
@@ -64,7 +55,7 @@ A red **W** appears in the menu bar and floating at the bottom of the screen.
 5. **Test it:** click into any text box, hold **Right Option ⌥**, say a sentence, and let go. The text appears,
    cleaned up.
 
-## 5. Show them the basics
+## 4. Show them the basics
 
 - **Dictate:** hold Right Option ⌥, talk, and let go. (They can switch to the fn/🌐 key under menu-bar W → Dictation Key.)
 - **Style:** click the floating W to choose Formal, Casual, or very casual for personal messages, work
@@ -78,4 +69,4 @@ Full guide: `INSTALL.md` in the repo.
 
 ## Updating later
 
-Run step 3 again. Settings and permissions carry over.
+Run step 2 again. Settings and permissions carry over.
