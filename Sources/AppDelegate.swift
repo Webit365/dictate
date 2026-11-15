@@ -49,6 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if self.callRecorder.isRecording { self.stopCall() } else { self.startCall() }
         }
         head.onHide = { [weak self] in self?.setHeadVisible(false) }
+        head.onOpenStyles = { StylesWindowController.show() }
         setHeadVisible(Settings.shared.showHead)
         downloadModelsIfNeeded()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in

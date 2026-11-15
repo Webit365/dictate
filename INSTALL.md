@@ -9,7 +9,7 @@ and an Anthropic API key (ask Stephen for yours).
 ## 1. Install
 
 1. In Dropbox, open **webit365 → apps → dictation → release**.
-2. Double-click the **Wisp zip** (for example Wisp-1.3.zip). A **Wisp** app appears next to it.
+2. Double-click the **Wisp zip** (for example Wisp-1.4.zip). A **Wisp** app appears next to it.
 3. Drag **Wisp** into your **Applications** folder.
 
 ## 2. Open it the first time
@@ -40,7 +40,7 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 - Prefer the **fn / 🌐 key**? Choose it in the menu-bar **W → Dictation Key**, then in
   **System Settings → Keyboard**, set **"Press 🌐 key to"** to **Do Nothing**.
 - Names it gets wrong (clients, places): **W menu → Edit Vocabulary…**, one per line.
-- **Style:** W menu → **Style…** sets how casual your text comes out in personal messages, work chats, email, and everything
+- **Style:** click the floating **W** (or W menu → **Style…**) to set how casual your text comes out in personal messages, work chats, email, and everything
   else: **Formal** (capitals + full punctuation), **Casual** (capitals, lighter punctuation, no final period), or
   **very casual** (all lowercase). Wisp picks the style from the app you're dictating into.
 
@@ -67,6 +67,6 @@ Coming from the older **Dictate** app? Quit it, drag **Dictate** from Applicatio
 
 ## Help
 
-- Floating W in the way? Drag it anywhere, or right-click it → **Hide Floating Head**.
+- Floating W in the way? Drag it anywhere (a click on the W opens Style; a drag moves it), or right-click it → **Hide Floating Head**.
 - Something not working? Click the **W in the menu bar**. Any problem is shown at the top of the menu.
 - Questions: ask Stephen.

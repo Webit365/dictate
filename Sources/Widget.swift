@@ -12,6 +12,7 @@ final class HeadModel: ObservableObject {
     @Published var setup: String?             // first-launch model download progress
     var onToggleNotes: (() -> Void)?
     var onHide: (() -> Void)?
+    var onOpenStyles: (() -> Void)?
 }
 
 /// The Webit365 logo (white W on a red circle, from webit365.com/favicon.svg), animated:
@@ -97,6 +98,8 @@ struct HeadWidget: View {
                 .overlay(Capsule(style: .continuous).stroke(Color.white.opacity(0.12), lineWidth: 1))
         )
         .contextMenu {
+            Button("Style…") { model.onOpenStyles?() }
+            Divider()
             Button("Hide Floating Head") { model.onHide?() }
         }
         .help(helpText)
@@ -139,13 +142,36 @@ struct HeadWidget: View {
     private var helpText: String {
         if model.callRecording { return "Recording call notes. Click Stop to write the notes." }
         if let busy = model.callBusy { return busy }
-        return "Hold fn to dictate. Click Notes to record a call."
+        return "Hold \(Settings.shared.hotkey.title) to dictate. Click the W for Style. Click Notes to record a call."
     }
 }
 
-/// Lets clicks land on the widget without first activating Dictate (so focus stays in your app).
+/// Lets clicks land on the widget without first activating Wisp (so focus stays in your app).
+/// The W logo on the left is handled here: a click opens Style, a drag moves the widget.
 final class FirstMouseHostingView<Content: View>: NSHostingView<Content> {
+    var onLogoClick: (() -> Void)?
+    /// Leading padding + logo width, in points.
+    var logoWidth: CGFloat = 52
+
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func mouseDown(with event: NSEvent) {
+        guard let window, convert(event.locationInWindow, from: nil).x <= logoWidth else {
+            super.mouseDown(with: event)
+            return
+        }
+        let startMouse = NSEvent.mouseLocation
+        let startOrigin = window.frame.origin
+        var moved = false
+        while let e = window.nextEvent(matching: [.leftMouseDragged, .leftMouseUp]) {
+            if e.type == .leftMouseUp { break }
+            let now = NSEvent.mouseLocation
+            let dx = now.x - startMouse.x, dy = now.y - startMouse.y
+            if abs(dx) > 3 || abs(dy) > 3 { moved = true }
+            if moved { window.setFrameOrigin(NSPoint(x: startOrigin.x + dx, y: startOrigin.y + dy)) }
+        }
+        if !moved { onLogoClick?() }
+    }
 }
 
 /// A floating, draggable panel that never takes keyboard focus, so pasting still goes
@@ -153,6 +179,7 @@ final class FirstMouseHostingView<Content: View>: NSHostingView<Content> {
 final class FloatingPanel: NSPanel {
     init(model: HeadModel) {
         let host = FirstMouseHostingView(rootView: HeadWidget(model: model))
+        host.onLogoClick = { [weak model] in model?.onOpenStyles?() }
         let size = NSSize(width: 150, height: 48)
         super.init(contentRect: NSRect(origin: .zero, size: size),
                    styleMask: [.nonactivatingPanel, .borderless], backing: .buffered, defer: false)
