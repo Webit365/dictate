@@ -9,7 +9,7 @@ and an Anthropic API key (ask Stephen for yours).
 ## 1. Install
 
 1. In Dropbox, open **webit365 → apps → dictation → release**.
-2. Double-click the **Wisp zip** (for example Wisp-1.2.zip). A **Wisp** app appears next to it.
+2. Double-click the **Wisp zip** (for example Wisp-1.3.zip). A **Wisp** app appears next to it.
 3. Drag **Wisp** into your **Applications** folder.
 
 ## 2. Open it the first time
@@ -40,6 +40,9 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 - Prefer the **fn / 🌐 key**? Choose it in the menu-bar **W → Dictation Key**, then in
   **System Settings → Keyboard**, set **"Press 🌐 key to"** to **Do Nothing**.
 - Names it gets wrong (clients, places): **W menu → Edit Vocabulary…**, one per line.
+- **Style:** W menu → **Style…** sets how casual your text comes out in personal messages, work chats, email, and everything
+  else: **Formal** (capitals + full punctuation), **Casual** (capitals, lighter punctuation, no final period), or
+  **very casual** (all lowercase). Wisp picks the style from the app you're dictating into.
 
 **Call notes:** click **Notes** on the floating W when a Zoom / Teams / Meet / Slack call starts, and **Stop** when it ends.
 About a minute later a **Call Notes window** pops up with the summary, decisions, action items, and the full

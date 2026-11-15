@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var state: State = .idle { didSet { updateIcon() } }
     private var pressedAt = Date()
     private var targetApp: String?
+    private var targetCategory: StyleCategory = .other
     private var lastText: String?
     private var statusNote: String?
     private var accessibilityTimer: Timer?
@@ -95,6 +96,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
         targetApp = NSWorkspace.shared.frontmostApplication?.localizedName
+        targetCategory = StyleCategory.current()
         do {
             try recorder.start()
         } catch {
@@ -124,6 +126,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         state = .working
         let app = targetApp
+        let category = targetCategory
         let vocab = Settings.vocabulary()
         let engine = Settings.shared.engine
 
@@ -140,7 +143,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 DispatchQueue.main.async { self.state = .idle }
                 return
             }
-            Cleaner.clean(raw, targetApp: app, vocabulary: vocab) { cleanResult in
+            Cleaner.clean(raw, targetApp: app, category: category, vocabulary: vocab) { cleanResult in
                 var finalText = raw
                 var note: String?
                 switch cleanResult {
@@ -394,6 +397,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(item(Keychain.anthropicKey() == nil ? "Set Anthropic API Key… (needed for Claude)" : "Change Anthropic API Key…",
                           #selector(setAPIKey)))
+        menu.addItem(item("Style…", #selector(showStyles)))
         menu.addItem(item("Edit Vocabulary…", #selector(editVocabulary)))
         menu.addItem(item("Open Dictation History", #selector(openHistory)))
         menu.addItem(.separator())
@@ -526,6 +530,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let raw = sender.representedObject as? String, let h = Hotkey(rawValue: raw) { Settings.shared.hotkey = h }
         hotkey.start()
     }
+    @objc private func showStyles() { StylesWindowController.show() }
+
     @objc private func editVocabulary() {
         Settings.ensureSupportFiles()
         NSWorkspace.shared.open(Settings.vocabularyURL)

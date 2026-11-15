@@ -3,7 +3,8 @@ import Foundation
 /// Turns a raw Whisper transcript into the text the speaker meant to type.
 enum Cleaner {
 
-    static func systemPrompt(vocabulary: [String], targetApp: String?) -> String {
+    static func systemPrompt(vocabulary: [String], targetApp: String?,
+                             style: WritingStyle = .formal, category: StyleCategory = .other) -> String {
         var s = """
         You are a dictation cleanup engine. The user message contains a raw speech-to-text \
         transcript inside <transcript> tags. Rewrite it as the clean text the speaker intended to type.
@@ -34,33 +35,41 @@ enum Cleaner {
                 + vocabulary.joined(separator: ", ") + "."
         }
         if let app = targetApp, !app.isEmpty {
-            s += "\n\nThe text will be pasted into the app \"\(app)\". Match normal writing for that app "
-                + "(for example, casual in Messages, complete sentences in Mail), without changing the speaker's words."
+            s += "\n\nThe text will be pasted into the app \"\(app)\"."
+        }
+        s += "\n\nStyle (this overrides the capitalization and punctuation rule above; never change the words "
+            + "to fit it): " + style.instruction
+        if category == .email {
+            s += " This is an email: when the speaker dictates a greeting (\"Hi Jeff\") or a sign-off, "
+                + "put each on its own line, with a blank line after the greeting."
         }
         return s
     }
 
-    static func clean(_ raw: String, targetApp: String?, vocabulary: [String],
+    static func clean(_ raw: String, targetApp: String?, category: StyleCategory = .other, vocabulary: [String],
                       completion: @escaping (Result<String, Error>) -> Void) {
+        let style = StyleStore.shared.style(for: category)
+        let prompt = systemPrompt(vocabulary: vocabulary, targetApp: targetApp, style: style, category: category)
+        let done: (Result<String, Error>) -> Void = { r in completion(r.map { style.enforce($0) }) }
         switch Settings.shared.engine {
-        case .none: completion(.success(raw))
-        case .claude: claude(raw, targetApp: targetApp, vocabulary: vocabulary, completion: completion)
-        case .local: ollama(raw, targetApp: targetApp, vocabulary: vocabulary, completion: completion)
+        case .none: done(.success(raw))
+        case .claude: claude(raw, system: prompt, completion: done)
+        case .local: ollama(raw, system: prompt, completion: done)
         }
     }
 
-    private static func claude(_ raw: String, targetApp: String?, vocabulary: [String],
+    private static func claude(_ raw: String, system: String,
                                completion: @escaping (Result<String, Error>) -> Void) {
         // Cleanup is a light task; low effort keeps it quick.
         ClaudeAPI.send(model: Settings.shared.claudeModel.rawValue,
-                       system: systemPrompt(vocabulary: vocabulary, targetApp: targetApp),
+                       system: system,
                        user: "<transcript>\n\(raw)\n</transcript>",
                        maxTokens: 8000, effort: "low", timeout: 25, completion: completion)
     }
 
     // MARK: Local model via Ollama (nothing leaves the Mac)
 
-    private static func ollama(_ raw: String, targetApp: String?, vocabulary: [String],
+    private static func ollama(_ raw: String, system: String,
                                completion: @escaping (Result<String, Error>) -> Void) {
         var req = URLRequest(url: URL(string: "http://127.0.0.1:11434/api/chat")!)
         req.httpMethod = "POST"
@@ -71,7 +80,7 @@ enum Cleaner {
             "stream": false,
             "options": ["temperature": 0],
             "messages": [
-                ["role": "system", "content": systemPrompt(vocabulary: vocabulary, targetApp: targetApp)],
+                ["role": "system", "content": system],
                 ["role": "user", "content": "<transcript>\n\(raw)\n</transcript>"],
             ],
         ]
