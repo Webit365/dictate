@@ -4,7 +4,7 @@ Wisp is Webit365's own dictation app, similar to Wispr Flow. Hold a key, talk, a
 typed, cleaned up, wherever your cursor is. It also records calls and writes notes with action items.
 
 **You need:** an Apple Silicon Mac (M1, M2, M3, M4) on macOS 14 or newer, about 1 GB of free space,
-and an Anthropic API key (ask Stephen for yours).
+and an Anthropic API key: your own (see **Getting an API key** below) or one from Stephen.
 
 ## 1. Install
 
@@ -25,6 +25,7 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 ## 3. Finish setup (one time)
 
 - **API key:** a Welcome box asks for your key. Paste it (it starts with `sk-ant-`) and click **Save**.
+  No key yet? Click **Skip**: dictation still works without cleanup, and you can add a key later from the W menu.
 - **Speech model download:** Wisp downloads its speech model (about 575 MB). The floating W shows
   **Setting up 40%** while this happens. It takes a few minutes, and you only do it once.
 - **Microphone:** click **Allow** when asked.
@@ -51,6 +52,19 @@ automatically in **Documents → Call Notes** (change the folder under **W menu 
 To see them again later: **W menu → Show Last Call Notes**.
 The first time, allow **Screen & System Audio Recording**; that's how it hears the other side. Nothing on screen is recorded.
 **Always tell people you're recording.** Headphones give the cleanest transcripts.
+
+## Getting an API key
+
+You can use your own Anthropic API key. It's saved only in your Mac's Keychain, and usage is billed to your
+own Anthropic account.
+
+1. Go to **console.anthropic.com** and sign up.
+2. Under **Billing**, add a card and some credits.
+3. Under **API Keys**, click **Create Key** and copy it (it starts with `sk-ant-`).
+4. Paste it into Wisp's Welcome box, or later under **W menu → Change Anthropic API Key…**, and click **Save**.
+
+**Rough cost:** a small fraction of a cent per dictation (about a dollar a month even for heavy use), and a few
+cents per call for notes. Never share your key or paste it anywhere but Wisp.
 
 ## Privacy
 

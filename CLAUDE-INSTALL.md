@@ -42,8 +42,15 @@ A red **W** appears in the menu bar and floating at the bottom of the screen.
 
 ## 3. Walk the person through setup
 
-1. **API key:** a "Welcome to Wisp" box asks for an Anthropic API key. They paste the key Stephen gave
-   them (starts with `sk-ant-`) and click **Save**. If they don't have one, they can click Skip and ask Stephen.
+1. **API key:** a "Welcome to Wisp" box asks for an Anthropic API key (starts with `sk-ant-`). They paste it
+   into that box and click **Save**. They can use their own key or one from Stephen. If they want their own:
+   - Open https://console.anthropic.com for them (`open https://console.anthropic.com`), and have them sign up.
+   - Under **Billing**, they add a card and some credits.
+   - Under **API Keys**, they click **Create Key**, copy it, and paste it straight into Wisp's box. Not into this chat.
+
+   Usage bills to their own account: a small fraction of a cent per dictation, a few cents per call for notes.
+   No key yet? They can click **Skip**. Dictation still works without cleanup, and they can add a key later
+   under W menu → Change Anthropic API Key.
 2. **Speech model:** Wisp downloads its speech model (about 575 MB). The floating W shows "Setting up NN%".
    Wait until it finishes.
 3. **Microphone:** click **Allow** when asked.
