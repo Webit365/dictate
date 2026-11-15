@@ -65,6 +65,14 @@ the app downloads its speech models on first launch and asks for an Anthropic AP
 Bump `CFBundleShortVersionString` / `CFBundleVersion` in `Resources/Info.plist` before packaging an update.
 Always package on the Mac that holds the "Wisp Local Signing" certificate, so updates keep everyone's permissions.
 
+## Linux (Mint / Cinnamon)
+
+A Python port with the same features lives in [`linux/`](linux/README.md). Install on a Mint PC with:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Webit365/dictate/main/linux/install.sh | bash
+```
+
 ## Rebuild
 
 ```bash
