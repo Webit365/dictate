@@ -9,8 +9,8 @@ VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Resource
 APP="$HOME/Library/Caches/Dictate-build/Wisp.app"
 
 mkdir -p release
-rm -f release/Dictate-*.zip release/Wisp-*.zip "release/How to install Wisp.md"
+rm -f release/Dictate-*.zip release/Wisp-*.zip release/How\ to\ install\ *.md
 ditto -c -k --sequesterRsrc --keepParent "$APP" "release/Wisp-$VERSION.zip"
-cp INSTALL.md "release/How to install Wisp.md"
+cp INSTALL.md release/How\ to\ install\ *.md
 
 echo "Packaged release/Wisp-$VERSION.zip ($(du -h "release/Wisp-$VERSION.zip" | cut -f1))"
