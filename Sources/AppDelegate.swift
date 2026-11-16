@@ -62,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         hotkey.onRelease = { [weak self] in self?.finishRecording() }
         hotkey.onCancel = { [weak self] in self?.cancelRecording() }
         hotkey.start()
+        Spacing.startWatching()
 
         if AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined {
             AVCaptureDevice.requestAccess(for: .audio) { _ in }
@@ -74,6 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 guard AXIsProcessTrusted() else { return }
                 t.invalidate()
                 self?.hotkey.start()
+                Spacing.startWatching()
             }
         }
     }
@@ -157,7 +159,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 DispatchQueue.main.async {
                     self.lastText = finalText
                     if AXIsProcessTrusted() {
-                        Paster.paste(finalText)
+                        let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier
+                        let pasteText = Spacing.adjust(finalText, pid: pid)
+                        Paster.paste(pasteText)
+                        Spacing.didPaste(pasteText, pid: pid)
                         self.statusNote = note
                     } else {
                         // Without Accessibility, macOS silently drops the ⌘V. Leave the text on the
@@ -180,7 +185,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         alertShown = true
         let a = NSAlert()
         a.messageText = "Wisp needs Accessibility permission to paste"
-        a.informativeText = "Your text is on the clipboard, so you can press ⌘V now.\n\nTo fix it for good: in Privacy & Security → Accessibility, select Wisp and remove it with the – button, then add it back with + (it's in your home folder's Applications folder) and turn it on."
+        a.informativeText = "Your text is on the clipboard, so you can press ⌘V now.\n\nTo fix it for good: in Privacy & Security → Accessibility, select Wisp and remove it with the – button, then add it back with + (it's at \(Bundle.main.bundlePath)) and turn it on."
         a.addButton(withTitle: "Open Accessibility Settings")
         a.addButton(withTitle: "Later")
         NSApp.activate(ignoringOtherApps: true)
