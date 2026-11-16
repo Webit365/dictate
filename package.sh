@@ -12,7 +12,7 @@ APP="$HOME/Library/Caches/Dictate-build/Wisp.app"
 mkdir -p release
 rm -f release/Dictate-*.zip release/Wisp-*.zip release/How\ to\ install\ *.md
 ditto -c -k --sequesterRsrc --keepParent "$APP" "release/Wisp-$VERSION.zip"
-cp INSTALL.md release/How\ to\ install\ *.md
+cp INSTALL.md "release/How to install Wisp.md"
 
 echo "Packaged release/Wisp-$VERSION.zip ($(du -h "release/Wisp-$VERSION.zip" | cut -f1))"
 
