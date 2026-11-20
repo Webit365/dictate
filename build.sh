@@ -26,6 +26,8 @@ swiftc -O -swift-version 5 -target arm64-apple-macos14.0 \
 
 ditto "$FW_DIR/whisper.framework" "$APP/Contents/Frameworks/whisper.framework"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+mkdir -p "$APP/Contents/Resources"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
 # Sign with the private "Dictate Local Signing" certificate when it exists, so macOS sees every
 # rebuild as the same app and keeps its Accessibility / Microphone / Screen Recording permissions.
