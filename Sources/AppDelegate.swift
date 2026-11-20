@@ -19,6 +19,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var accessibilityTimer: Timer?
     private let callRecorder = CallRecorder()
     private var callApp: String?
+    private let callWatcher = CallWatcher()
+    private var autoStarted = false          // this recording was started by the call watcher
     private var callStatus: String? { didSet { syncHead() } }   // set while a finished call is being processed
     private let head = HeadModel()
     private var headPanel: FloatingPanel?
@@ -52,6 +54,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         head.onOpenStyles = { StylesWindowController.show() }
         head.onOpenNotes = { StylesWindowController.show(notes: true) }
         setHeadVisible(Settings.shared.showHead)
+        callWatcher.onCallStarted = { [weak self] name in self?.callDetected(name) }
+        callWatcher.onCallEnded = { [weak self] in self?.callEnded() }
+        if Settings.shared.autoStartCalls { callWatcher.start() }
         downloadModelsIfNeeded()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let self, Settings.shared.engine == .claude || Settings.shared.summaryEngine.model != nil,
@@ -395,6 +400,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             callMenu.addItem(i)
         }
         callMenu.addItem(.separator())
+        let auto = item("Auto-Start When a Call Begins", #selector(toggleAutoStart))
+        auto.state = s.autoStartCalls ? .on : .off
+        auto.toolTip = "Starts call notes when Zoom, Teams, Slack, FaceTime, a phone call or Google Meet starts using "
+            + "your microphone, and writes the notes when the call ends."
+        callMenu.addItem(auto)
+        callMenu.addItem(.separator())
         callMenu.addItem(disabled("Saving to: " + s.notesFolder.lastPathComponent))
         callMenu.addItem(item("Choose Notes Folder…", #selector(chooseNotesFolder)))
         callMenu.addItem(item("Open Notes Folder", #selector(openNotesFolder)))
@@ -441,24 +452,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: Call notes
 
-    @objc private func startCall() {
+    @objc private func startCall() { beginCall(detected: nil) }
+
+    /// `detected` is the call app's name when the call watcher started the recording.
+    private func beginCall(detected: String?) {
         guard !callRecorder.isRecording, callStatus == nil else { return }
         guard modelsReady else { statusNote = "Wait for first-time setup to finish before recording calls."; return }
-        callApp = CallApp.detect()
+        callApp = CallApp.detect() ?? detected
+        autoStarted = detected != nil
         callRecorder.start { [weak self] error in
             guard let self else { return }
             if let error {
+                self.autoStarted = false
                 self.statusNote = error.localizedDescription
             } else {
-                self.statusNote = "Recording the call. Let everyone know you're recording."
+                self.statusNote = detected.map { "\($0) call detected, taking notes. Let everyone know you're recording." }
+                    ?? "Recording the call. Let everyone know you're recording."
                 NSSound(named: "Tink")?.play()
             }
             self.updateIcon()
         }
     }
 
+    // Auto-start: the watcher saw a call app take the microphone.
+    private func callDetected(_ name: String) {
+        guard Settings.shared.autoStartCalls, !callRecorder.isRecording, callStatus == nil else { return }
+        beginCall(detected: name)
+    }
+
+    // The call app let go of the microphone: finish the notes, but only for recordings Wisp started itself.
+    private func callEnded() {
+        guard autoStarted, callRecorder.isRecording else { return }
+        stopCall()
+    }
+
+    @objc private func toggleAutoStart() {
+        Settings.shared.autoStartCalls.toggle()
+        if Settings.shared.autoStartCalls { callWatcher.start() } else { callWatcher.stop() }
+    }
+
     @objc private func stopCall() {
         guard callRecorder.isRecording else { return }
+        autoStarted = false
         if callApp == nil { callApp = CallApp.detect() }
         callStatus = "Finishing recording…"
         statusNote = nil
@@ -486,6 +521,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func discardCall() {
         guard callRecorder.isRecording else { return }
+        autoStarted = false
         callRecorder.stop { [weak self] folder, _ in
             if let folder { try? FileManager.default.removeItem(at: folder) }
             self?.statusNote = "Recording discarded."

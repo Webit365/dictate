@@ -42,7 +42,9 @@ pkill -x Dictate 2>/dev/null || true
 pkill -x Wisp 2>/dev/null || true
 rm -rf "$HOME/Applications/Dictate.app" "$BUILD/Dictate.app"   # old name, before it became Wisp
 mkdir -p "$HOME/Applications"
-rm -rf "$INSTALL"
-ditto "$APP" "$INSTALL"
+# Update the app in place instead of deleting it first: the Dock drops a pinned app whose
+# file disappears, so rm -rf + copy kept knocking Wisp out of the Dock.
+mkdir -p "$INSTALL"
+rsync -a --delete "$APP/" "$INSTALL/"
 open "$INSTALL"
 echo "Installed and launched: $INSTALL"

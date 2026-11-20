@@ -21,6 +21,39 @@ if let i = CommandLine.arguments.firstIndex(of: "--segments"), i + 1 < CommandLi
     sem.wait(); t.shutdown(); exit(0)
 }
 
+// Wisp --call-watch [seconds]  (prints which apps use the mic and whether that counts as a call)
+if let i = CommandLine.arguments.firstIndex(of: "--call-watch") {
+    let secs = i + 1 < CommandLine.arguments.count ? Int(CommandLine.arguments[i + 1]) ?? 10 : 10
+    for _ in 0..<max(1, secs / 2) {
+        let users = CallWatcher.micUsers().map { "\($0.bundleID.isEmpty ? "pid \($0.pid)" : $0.bundleID)" }
+        print("mic: \(users.isEmpty ? "-" : users.joined(separator: ", "))  →  call: \(CallWatcher.currentCall() ?? "none")")
+        fflush(stdout)
+        Thread.sleep(forTimeInterval: 2)
+    }
+    exit(0)
+}
+
+// Wisp --test-call-watcher  (checks the start/end timing with a fake call)
+if CommandLine.arguments.contains("--test-call-watcher") {
+    let w = CallWatcher()
+    var micApp: String?
+    var log: [String] = []
+    w.source = { micApp }
+    w.onCallStarted = { log.append("start \($0)") }
+    w.onCallEnded = { log.append("end") }
+    let t0 = Date()
+    func at(_ s: Double) { w.tick(now: t0.addingTimeInterval(s)) }
+    micApp = "Zoom"; at(0); at(2)                 // only 2 s: too short
+    micApp = nil; at(3)                           // blip ends, nothing happened
+    micApp = "Zoom"; at(10); at(12); at(14)       // 4 s on the mic: call starts
+    micApp = nil; at(16); at(24)                  // 10 s quiet (muted?): still in the call
+    micApp = "Zoom"; at(26)                       // back on the mic
+    micApp = nil; at(30); at(40); at(42)          // 16 s quiet: call ends
+    let expected = ["start Zoom", "end"]
+    print(log == expected ? "PASS \(log)" : "FAIL got \(log), expected \(expected)")
+    exit(log == expected ? 0 : 1)
+}
+
 // Dictate --render-notes notes.md out.html  (writes the formatted notes page, for previewing the design)
 if let i = CommandLine.arguments.firstIndex(of: "--render-notes"), i + 2 < CommandLine.arguments.count {
     let md = (try? String(contentsOfFile: CommandLine.arguments[i + 1], encoding: .utf8)) ?? ""

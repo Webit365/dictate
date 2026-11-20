@@ -102,6 +102,11 @@ final class Settings {
         }
         set { d.set(newValue.path, forKey: "notesFolder") }
     }
+    /// Start call notes by itself when a voice call begins (and stop when it ends).
+    var autoStartCalls: Bool {
+        get { d.bool(forKey: "autoStartCalls") }
+        set { d.set(newValue, forKey: "autoStartCalls") }
+    }
     var showHead: Bool {
         get { d.object(forKey: "showHead") as? Bool ?? true }
         set { d.set(newValue, forKey: "showHead") }

@@ -33,6 +33,9 @@ After the call:
 4. Every saved note is in the **Notes** tab of the Wisp window (🎤 → **All Call Notes…**), with
    search, Copy Notes, Copy + Transcript, Save a Copy and Print / Save as PDF.
 
+Or turn on **Call Notes Settings → Auto-Start When a Call Begins**: Wisp watches which apps use the mic
+(CallWatcher.swift) and starts notes once a call app holds it for 4 s, then stops after 15 s without one.
+
 The first time, macOS asks for **Screen & System Audio Recording** permission (that's how it hears the other side;
 nothing on screen is recorded). Audio is kept in `~/Library/Application Support/Dictate/calls/`.
 Headphones give the cleanest transcript; on speakers, Wisp filters out the echo.
