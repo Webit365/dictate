@@ -50,10 +50,14 @@ if let i = CommandLine.arguments.firstIndex(of: "--test-style"), i + 1 < Command
     exit(0)
 }
 
-// Wisp --render-styles out.png [dark]  (saves a picture of the Style window, for checking the design)
+// Wisp --render-styles out.png [dark] [notes]  (saves a picture of the Style window, or its Notes tab)
 if let i = CommandLine.arguments.firstIndex(of: "--render-styles"), i + 1 < CommandLine.arguments.count {
     _ = NSApplication.shared
     let dark = CommandLine.arguments.contains("dark")
+    if CommandLine.arguments.contains("notes") {
+        WispWindowState.shared.showNotes = true
+        NotesLibrary.shared.reload()
+    }
     let view = NSHostingView(rootView: StylesView().environment(\.colorScheme, dark ? .dark : .light))
     view.frame = NSRect(x: 0, y: 0, width: 900, height: 660)
     view.layoutSubtreeIfNeeded()

@@ -208,10 +208,17 @@ final class StyleStore: ObservableObject {
     }
 }
 
-// MARK: - Styles window
+// MARK: - Styles window (also holds the Notes tab)
+
+/// Which part of the Wisp window is showing, so the menus can open it straight to Notes.
+final class WispWindowState: ObservableObject {
+    static let shared = WispWindowState()
+    @Published var showNotes = false
+}
 
 struct StylesView: View {
     @ObservedObject var store = StyleStore.shared
+    @ObservedObject var nav = WispWindowState.shared
     @State private var tab: StyleCategory = .personal
     @Environment(\.colorScheme) private var scheme
 
@@ -219,26 +226,47 @@ struct StylesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
-            Text("Style")
+            Text(nav.showNotes ? "Call Notes" : "Style")
                 .font(.system(size: 28, weight: .semibold))
 
             // Tabs
             HStack(spacing: 28) {
                 ForEach(StyleCategory.allCases) { c in
-                    Button { tab = c } label: {
-                        VStack(spacing: 8) {
-                            Text(c.title)
-                                .font(.system(size: 14, weight: tab == c ? .semibold : .regular))
-                                .foregroundColor(tab == c ? .primary : .secondary)
-                            Rectangle().fill(tab == c ? Color.primary : .clear).frame(height: 2)
-                        }
-                        .fixedSize()
-                    }
-                    .buttonStyle(.plain)
+                    tabButton(c.title, on: !nav.showNotes && tab == c) { tab = c; nav.showNotes = false }
                 }
                 Spacer()
+                tabButton("Notes", symbol: "note.text", on: nav.showNotes) { nav.showNotes = true }
             }
             .overlay(alignment: .bottom) { Divider() }
+
+            if nav.showNotes {
+                NotesLibraryView()
+            } else {
+                styleContent
+            }
+        }
+        .padding(.horizontal, 36)
+        .padding(.vertical, 28)
+        .frame(minWidth: 820, minHeight: 600)
+        .background(scheme == .dark ? Color(white: 0.11) : Color(white: 0.985))
+    }
+
+    private func tabButton(_ title: String, symbol: String? = nil, on: Bool, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                HStack(spacing: 5) {
+                    if let symbol { Image(systemName: symbol).font(.system(size: 12)) }
+                    Text(title).font(.system(size: 14, weight: on ? .semibold : .regular))
+                }
+                .foregroundColor(on ? .primary : .secondary)
+                Rectangle().fill(on ? Color.primary : .clear).frame(height: 2)
+            }
+            .fixedSize()
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder private var styleContent: some View {
 
             // Banner
             HStack(alignment: .center, spacing: 16) {
@@ -275,11 +303,6 @@ struct StylesView: View {
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
             Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 36)
-        .padding(.vertical, 28)
-        .frame(minWidth: 820, minHeight: 600)
-        .background(scheme == .dark ? Color(white: 0.11) : Color(white: 0.985))
     }
 
     private func card(_ s: WritingStyle) -> some View {
@@ -322,7 +345,9 @@ struct StylesView: View {
 final class StylesWindowController: NSWindowController {
     private static var shared: StylesWindowController?
 
-    static func show() {
+    static func show(notes: Bool = false) {
+        WispWindowState.shared.showNotes = notes
+        if notes { NotesLibrary.shared.reload() }
         if shared == nil { shared = StylesWindowController() }
         shared?.showWindow(nil)
         shared?.window?.makeKeyAndOrderFront(nil)
@@ -333,7 +358,7 @@ final class StylesWindowController: NSWindowController {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 900, height: 660),
                               styleMask: [.titled, .closable, .miniaturizable, .resizable],
                               backing: .buffered, defer: false)
-        window.title = "Wisp Style"
+        window.title = "Wisp"
         window.contentView = NSHostingView(rootView: StylesView())
         window.center()
         window.isReleasedWhenClosed = false

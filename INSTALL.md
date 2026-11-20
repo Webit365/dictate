@@ -49,7 +49,8 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 About a minute later a **Call Notes window** pops up with the summary, decisions, action items, and the full
 transcript. Use its buttons to **Copy Notes**, **Open in Browser**, or **Show in Finder**. The notes are also saved
 automatically in **Documents → Call Notes** (change the folder under **W menu → Call Notes Settings**).
-To see them again later: **W menu → Show Last Call Notes**.
+To see them again later: **W menu → All Call Notes…** (or the **Notes** tab in the Style window). It lists every
+note with search, and buttons to copy the notes (with or without the transcript), save a copy, or save as PDF.
 The first time, allow **Screen & System Audio Recording**; that's how it hears the other side. Nothing on screen is recorded.
 **Always tell people you're recording.** Headphones give the cleanest transcripts.
 

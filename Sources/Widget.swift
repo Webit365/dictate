@@ -13,6 +13,7 @@ final class HeadModel: ObservableObject {
     var onToggleNotes: (() -> Void)?
     var onHide: (() -> Void)?
     var onOpenStyles: (() -> Void)?
+    var onOpenNotes: (() -> Void)?
 }
 
 /// The Webit365 logo (white W on a red circle, from webit365.com/favicon.svg), animated:
@@ -99,6 +100,7 @@ struct HeadWidget: View {
         )
         .contextMenu {
             Button("Style…") { model.onOpenStyles?() }
+            Button("All Call Notes…") { model.onOpenNotes?() }
             Divider()
             Button("Hide Floating Head") { model.onHide?() }
         }

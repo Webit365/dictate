@@ -30,6 +30,8 @@ After the call:
    Action Items, and Follow-ups. Choose **Transcript only** to keep a call 100% private.
 3. A Markdown file opens with the notes and the full transcript, saved to **Documents/Call Notes**
    (change it under Call Notes Settings → Choose Notes Folder).
+4. Every saved note is in the **Notes** tab of the Wisp window (🎤 → **All Call Notes…**), with
+   search, Copy Notes, Copy + Transcript, Save a Copy and Print / Save as PDF.
 
 The first time, macOS asks for **Screen & System Audio Recording** permission (that's how it hears the other side;
 nothing on screen is recorded). Audio is kept in `~/Library/Application Support/Dictate/calls/`.

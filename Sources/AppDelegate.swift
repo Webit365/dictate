@@ -50,6 +50,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         head.onHide = { [weak self] in self?.setHeadVisible(false) }
         head.onOpenStyles = { StylesWindowController.show() }
+        head.onOpenNotes = { StylesWindowController.show(notes: true) }
         setHeadVisible(Settings.shared.showHead)
         downloadModelsIfNeeded()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
@@ -344,6 +345,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let last = lastNotesURL, FileManager.default.fileExists(atPath: last.path), !callRecorder.isRecording {
             menu.addItem(item("Show Last Call Notes", #selector(showLastNotes)))
         }
+        menu.addItem(item("All Call Notes…", #selector(showAllNotes)))
         menu.addItem(.separator())
 
         let copy = item("Copy Last Dictation", #selector(copyLast))
@@ -537,6 +539,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         hotkey.start()
     }
     @objc private func showStyles() { StylesWindowController.show() }
+    @objc private func showAllNotes() { StylesWindowController.show(notes: true) }
 
     @objc private func editVocabulary() {
         Settings.ensureSupportFiles()
