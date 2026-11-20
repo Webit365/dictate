@@ -49,7 +49,8 @@ A Webit365 **W** appears in your menu bar and floating at the bottom of your scr
 About a minute later a **Call Notes window** pops up with the summary, decisions, action items, and the full
 transcript. Use its buttons to **Copy Notes**, **Open in Browser**, or **Show in Finder**. The notes are also saved
 automatically in **Documents → Call Notes** (change the folder under **W menu → Call Notes Settings**).
-Want it hands-free? **W menu → Call Notes Settings → Auto-Start When a Call Begins** starts notes when Zoom, Teams,
+Want it hands-free? Turn on **Auto-start notes when a call begins** at the top of the **Notes** tab (or right-click the
+floating W → **Auto-Start Notes on Calls**; a green dot on Notes means it's on). It starts notes when Zoom, Teams,
 a Slack huddle, FaceTime, a phone call or Google Meet starts using your mic, and writes them when the call ends.
 You still need to tell people you're recording.
 

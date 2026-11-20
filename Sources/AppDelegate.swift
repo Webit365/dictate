@@ -56,6 +56,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setHeadVisible(Settings.shared.showHead)
         callWatcher.onCallStarted = { [weak self] name in self?.callDetected(name) }
         callWatcher.onCallEnded = { [weak self] in self?.callEnded() }
+        AutoStartSetting.shared.onChange = { [weak self] on in
+            if on { self?.callWatcher.start() } else { self?.callWatcher.stop() }
+        }
         if Settings.shared.autoStartCalls { callWatcher.start() }
         downloadModelsIfNeeded()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
@@ -486,10 +489,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         stopCall()
     }
 
-    @objc private func toggleAutoStart() {
-        Settings.shared.autoStartCalls.toggle()
-        if Settings.shared.autoStartCalls { callWatcher.start() } else { callWatcher.stop() }
-    }
+    @objc private func toggleAutoStart() { AutoStartSetting.shared.isOn.toggle() }
 
     @objc private func stopCall() {
         guard callRecorder.isRecording else { return }

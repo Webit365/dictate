@@ -1,5 +1,23 @@
 import AppKit
 import CoreAudio
+import Combine
+
+/// The "auto-start call notes" switch, shared by the menu, the Notes tab and the widget.
+final class AutoStartSetting: ObservableObject {
+    static let shared = AutoStartSetting()
+    /// Set by the app: starts or stops the call watcher.
+    var onChange: ((Bool) -> Void)?
+
+    @Published var isOn: Bool {
+        didSet {
+            guard isOn != oldValue else { return }
+            Settings.shared.autoStartCalls = isOn
+            onChange?(isOn)
+        }
+    }
+
+    private init() { isOn = Settings.shared.autoStartCalls }
+}
 
 /// Notices when a voice call starts and ends, by watching which apps are using the microphone
 /// (macOS reports this per app). Used for "Auto-Start When a Call Begins".

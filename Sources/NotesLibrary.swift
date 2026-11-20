@@ -135,22 +135,56 @@ final class NotesLibrary: ObservableObject {
 
 struct NotesLibraryView: View {
     @ObservedObject var lib = NotesLibrary.shared
+    @ObservedObject var auto = AutoStartSetting.shared
     @Environment(\.colorScheme) private var scheme
     @State private var copied: String?
 
     private let red = Color(red: 0xE1 / 255.0, green: 0x1D / 255.0, blue: 0x3C / 255.0)
 
     var body: some View {
-        HStack(spacing: 0) {
-            sidebar.frame(width: 290)
-            Divider()
-            detail
+        VStack(spacing: 14) {
+            autoStartBar
+            HStack(spacing: 0) {
+                sidebar.frame(width: 290)
+                Divider()
+                detail
+            }
+            .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(scheme == .dark ? Color(white: 0.15) : .white))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.primary.opacity(0.10)))
         }
+        .onAppear { lib.reload() }
+    }
+
+    /// On/off switch for starting notes by itself when a call begins.
+    private var autoStartBar: some View {
+        HStack(spacing: 14) {
+            Image(systemName: auto.isOn ? "phone.badge.waveform.fill" : "phone.fill")
+                .font(.system(size: 16))
+                .foregroundColor(auto.isOn ? red : .secondary)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill((auto.isOn ? red : Color.primary).opacity(0.12)))
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Auto-start notes when a call begins")
+                    .font(.system(size: 14, weight: .semibold))
+                Text(auto.isOn
+                     ? "On: Zoom, Teams, Slack, FaceTime, phone calls and Google Meet. Notes are written when the call ends."
+                     : "Off: click Notes on the floating W to record a call yourself.")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Toggle("", isOn: $auto.isOn)
+                .toggleStyle(.switch)
+                .tint(red)
+                .labelsHidden()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
             .fill(scheme == .dark ? Color(white: 0.15) : .white))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.primary.opacity(0.10)))
-        .onAppear { lib.reload() }
     }
 
     // List of notes with search

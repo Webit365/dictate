@@ -84,6 +84,7 @@ struct LogoW: View {
 
 struct HeadWidget: View {
     @ObservedObject var model: HeadModel
+    @ObservedObject var auto = AutoStartSetting.shared
 
     var body: some View {
         HStack(spacing: 8) {
@@ -101,6 +102,7 @@ struct HeadWidget: View {
         .contextMenu {
             Button("Style…") { model.onOpenStyles?() }
             Button("All Call Notes…") { model.onOpenNotes?() }
+            Toggle("Auto-Start Notes on Calls", isOn: $auto.isOn)
             Divider()
             Button("Hide Floating Head") { model.onHide?() }
         }
@@ -114,7 +116,8 @@ struct HeadWidget: View {
                     ProgressView().controlSize(.small).scaleEffect(0.6).frame(width: 9, height: 9)
                 } else {
                     Circle()
-                        .fill(model.callRecording ? Color.red : Color.white.opacity(0.55))
+                        .fill(model.callRecording ? Color.red
+                              : auto.isOn ? Color(red: 0.2, green: 0.85, blue: 0.4) : Color.white.opacity(0.55))
                         .frame(width: 8, height: 8)
                         .opacity(model.callRecording && model.callSeconds % 2 == 1 ? 0.35 : 1)
                 }
@@ -144,7 +147,9 @@ struct HeadWidget: View {
     private var helpText: String {
         if model.callRecording { return "Recording call notes. Click Stop to write the notes." }
         if let busy = model.callBusy { return busy }
-        return "Hold \(Settings.shared.hotkey.title) to dictate. Click the W for Style. Click Notes to record a call."
+        let base = "Hold \(Settings.shared.hotkey.title) to dictate. Click the W for Style. Click Notes to record a call."
+        return auto.isOn ? base + " Auto-start is on (green dot): calls start notes by themselves. Right-click to turn it off."
+                         : base + " Right-click to turn on auto-start for calls."
     }
 }
 
