@@ -36,6 +36,11 @@ After the call:
 Or turn on **Call Notes Settings → Auto-Start When a Call Begins**: Wisp watches which apps use the mic
 (CallWatcher.swift) and starts notes once a call app holds it for 4 s, then stops after 15 s without one.
 
+**Share Link** (in the Notes tab or a note's own window) puts the notes, without the transcript, on a private
+`webit365.com/notes/<code>` page and copies the link to paste to anyone. Sharing the same notes
+again updates that page and keeps the link. The first share asks for the team's Wisp share key
+(Keychain item `wisp-share-key`). The pages aren't listed on Google, but anyone with the link can read them.
+
 The first time, macOS asks for **Screen & System Audio Recording** permission (that's how it hears the other side;
 nothing on screen is recorded). Audio is kept in `~/Library/Application Support/Dictate/calls/`.
 Headphones give the cleanest transcript; on speakers, Wisp filters out the echo.

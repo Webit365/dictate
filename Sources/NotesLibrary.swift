@@ -138,6 +138,7 @@ struct NotesLibraryView: View {
     @ObservedObject var auto = AutoStartSetting.shared
     @Environment(\.colorScheme) private var scheme
     @State private var copied: String?
+    @State private var sharing = false
 
     private let red = Color(red: 0xE1 / 255.0, green: 0x1D / 255.0, blue: 0x3C / 255.0)
 
@@ -264,6 +265,7 @@ struct NotesLibraryView: View {
         .contextMenu {
             Button("Copy Notes") { lib.copy(item, withTranscript: false) }
             Button("Copy Notes + Transcript") { lib.copy(item, withTranscript: true) }
+            Button("Share Link") { share(item) }
             Button("Save a Copy…") { lib.saveCopy(item) }
             Divider()
             Button("Open in Its Own Window") { NotesWindowController.show(item.url) }
@@ -286,6 +288,12 @@ struct NotesLibraryView: View {
                         Label(copied == "all" ? "Copied" : "Copy + Transcript",
                               systemImage: copied == "all" ? "checkmark" : "text.quote")
                     }
+                    Button { share(item) } label: {
+                        Label(sharing ? "Sharing…" : (copied == "link" ? "Link Copied" : "Share Link"),
+                              systemImage: copied == "link" ? "checkmark" : "link")
+                    }
+                    .disabled(sharing)
+                    .help("Puts the notes (no transcript) on a private webit365.com link and copies it")
                     Menu {
                         Button("Save a Copy (Markdown)…") { lib.saveCopy(item) }
                         Button("Print or Save as PDF…") { lib.printOrPDF() }
@@ -318,6 +326,16 @@ struct NotesLibraryView: View {
         let tag = transcript ? "all" : "notes"
         copied = tag
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { if copied == tag { copied = nil } }
+    }
+
+    private func share(_ item: NoteItem) {
+        sharing = true
+        NotesSharer.shareAndCopy(markdown: item.markdown, fileURL: item.url, window: NSApp.keyWindow) { ok in
+            sharing = false
+            guard ok else { return }
+            copied = "link"
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { if copied == "link" { copied = nil } }
+        }
     }
 
     private static func dateText(_ d: Date) -> String {
