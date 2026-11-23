@@ -153,6 +153,7 @@ final class NotesWindowController: NSWindowController, NSWindowDelegate {
     private let fileURL: URL
     private let markdown: String
     private let html: String
+    private lazy var shareButton = button("Share Link", "link", #selector(shareLink))
 
     static func show(_ url: URL) {
         guard let md = try? String(contentsOf: url, encoding: .utf8) else {
@@ -193,6 +194,7 @@ final class NotesWindowController: NSWindowController, NSWindowDelegate {
 
         let bar = NSStackView(views: [
             button("Copy Notes", "doc.on.doc", #selector(copyNotes)),
+            shareButton,
             button("Open in Browser", "safari", #selector(openInBrowser)),
             button("Show in Finder", "folder", #selector(showInFinder)),
         ])
@@ -237,6 +239,22 @@ final class NotesWindowController: NSWindowController, NSWindowDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let self else { return }
             self.window?.title = CallNotes.extractTitle(self.markdown) ?? "Call Notes"
+        }
+    }
+
+    /// Uploads the notes (no transcript) to webit365.com and copies the link, ready to paste to anyone.
+    @objc private func shareLink() {
+        shareButton.isEnabled = false
+        shareButton.title = "Sharing…"
+        NotesSharer.shareAndCopy(markdown: markdown, fileURL: fileURL, window: window) { [weak self] ok in
+            guard let self else { return }
+            self.shareButton.isEnabled = true
+            self.shareButton.title = ok ? "Link Copied" : "Share Link"
+            if ok {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                    self?.shareButton.title = "Share Link"
+                }
+            }
         }
     }
 
