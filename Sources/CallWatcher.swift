@@ -19,14 +19,23 @@ final class AutoStartSetting: ObservableObject {
     private init() { isOn = Settings.shared.autoStartCalls }
 }
 
+/// A call app holding the microphone. `listenTo` is the bundle-ID prefix whose sound is checked for
+/// voices before the call counts (nil: holding the mic is enough).
+struct DetectedCall: Equatable {
+    let name: String
+    let listenTo: String?
+}
+
 /// Notices when a voice call starts and ends, by watching which apps are using the microphone
 /// (macOS reports this per app). Used for "Auto-Start When a Call Begins".
 ///
-/// A call has started when a call app (Zoom, Teams, Slack huddle, FaceTime, a phone call through
-/// the iPhone, WhatsApp…) keeps the mic open for a few seconds. For browsers it also needs a
-/// call window (Google Meet, Zoom or Teams on the web), so a website using the mic doesn't count.
+/// A call app taking the mic isn't enough on its own: Slack opens the mic as soon as a huddle rings
+/// and keeps it open until the huddle ends, even if you declined. So for native call apps the call
+/// only counts once that app plays the other people's voices, which happens only after you join.
+/// For browsers it needs a call window (Google Meet, Zoom or Teams on the web) instead.
 /// The call has ended once no call app has used the mic for a while (muting in most call apps
-/// keeps the mic open, and the grace period covers the ones that don't).
+/// keeps the mic open, and the grace period covers the ones that don't), or once the call app has
+/// played no voices for several minutes (you left, but the app kept the mic).
 final class CallWatcher {
     var onCallStarted: ((String) -> Void)?
     var onCallEnded: (() -> Void)?
@@ -35,13 +44,20 @@ final class CallWatcher {
     var startAfter: TimeInterval = 4
     /// Seconds without any call app on the mic before the call counts as over.
     var endAfter: TimeInterval = 15
+    /// Seconds of the other side's voice needed to know you've joined.
+    var voiceNeeded: Double = 2
+    /// Minutes of no voices from the call app before the call counts as over (you left).
+    var silentEndAfter: TimeInterval = 5 * 60
 
     private(set) var inCall = false
     private var seenSince: Date?
     private var lastSeen = Date.distantPast
     private var timer: Timer?
+    private var listener: VoiceListener?
+    private var listenerStarted = Date.distantPast
     /// Where the current state comes from; replaceable for tests.
-    var source: () -> String? = { CallWatcher.currentCall() }
+    var source: () -> DetectedCall? = { CallWatcher.currentCall() }
+    var makeListener: (String) -> VoiceListener = { CallListener(bundlePrefix: $0) }
 
     func start() {
         guard timer == nil else { return }
@@ -53,28 +69,58 @@ final class CallWatcher {
         timer = nil
         inCall = false
         seenSince = nil
+        dropListener()
+    }
+
+    private func dropListener() {
+        listener?.stop()
+        listener = nil
     }
 
     func tick(now: Date = Date()) {
-        if let name = source() {
-            lastSeen = now
-            if seenSince == nil { seenSince = now }
-            if !inCall, let since = seenSince, now.timeIntervalSince(since) >= startAfter {
-                inCall = true
-                onCallStarted?(name)
-            }
-        } else {
+        guard let call = source() else {
             seenSince = nil
+            dropListener()
             if inCall, now.timeIntervalSince(lastSeen) >= endAfter {
                 inCall = false
                 onCallEnded?()
             }
+            return
         }
+        lastSeen = now
+        if seenSince == nil { seenSince = now }
+
+        if inCall {
+            // In the call, but the app has gone quiet for minutes: you've left and it kept the mic.
+            if let l = listener, !l.failed,
+               now.timeIntervalSince(l.lastVoice ?? listenerStarted) >= silentEndAfter {
+                inCall = false
+                seenSince = now
+                dropListener()
+                onCallEnded?()
+            }
+            return
+        }
+
+        guard let since = seenSince, now.timeIntervalSince(since) >= startAfter else { return }
+        if let prefix = call.listenTo {
+            // Ringing or declined calls can hold the mic too: wait to hear the other side.
+            if listener == nil {
+                listener = makeListener(prefix)
+                listenerStarted = now
+            }
+            guard let l = listener, l.failed || l.voiceSeconds >= voiceNeeded else { return }
+        }
+        inCall = true
+        onCallStarted?(call.name)
     }
 
     // MARK: Which call is using the mic right now
 
     /// Bundle ID (or its prefix, so helper processes match too) → name shown in the notes.
+    /// FaceTime and phone calls run through system services, so those can't be listened to and
+    /// still start on the mic alone (they don't ring with the mic open).
+    private static let unheard: Set<String> = ["FaceTime", "Phone call"]
     private static let callApps: [(String, String)] = [
         ("us.zoom.", "Zoom"),
         ("com.microsoft.teams", "Microsoft Teams"),
@@ -102,19 +148,21 @@ final class CallWatcher {
         "org.mozilla.firefox", "com.brave.Browser", "com.operasoftware.", "com.vivaldi.",
     ]
 
-    /// Name of the call app using the mic, or nil if no call is going on.
-    static func currentCall() -> String? {
+    /// The call app using the mic, or nil if no call is going on.
+    static func currentCall() -> DetectedCall? {
         var browserOnMic = false
         for p in micUsers() {
             if let hit = callApps.first(where: { p.bundleID.hasPrefix($0.0) }) {
                 // FaceTime's background service also carries iPhone calls; the window tells them apart.
-                if hit.1 == "FaceTime" { return CallApp.detect() == "FaceTime" ? "FaceTime" : "FaceTime / Phone" }
-                return hit.1
+                if hit.1 == "FaceTime" {
+                    return DetectedCall(name: CallApp.detect() == "FaceTime" ? "FaceTime" : "FaceTime / Phone", listenTo: nil)
+                }
+                return DetectedCall(name: hit.1, listenTo: unheard.contains(hit.1) ? nil : hit.0)
             }
             if browserPrefixes.contains(where: { p.bundleID.hasPrefix($0) }) { browserOnMic = true }
         }
         if browserOnMic, let web = CallApp.detect(), ["Google Meet", "Zoom", "Microsoft Teams", "Slack"].contains(web) {
-            return web
+            return DetectedCall(name: web, listenTo: nil)
         }
         return nil
     }
